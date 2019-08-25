@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -22,13 +23,14 @@ public class TinyUrlController {
     private UrlRepository urlRepository;
 
     @GetMapping(path = "/shorten")
-    public @ResponseBody UrlResponse shortenUrl(@RequestParam String link) {
+    public @ResponseBody
+    UrlResponse shortenUrl(@RequestParam String link) {
         //If the link is empty, throws it.
         if (link.isEmpty()) {
             throw new IllegalArgumentException("O Parâmetro link não pode ser vazio");
         }
 
-        String formattedLink = "";
+        String formattedLink = link;
         //If URL has http or https, removes it.
         if (link.contains("http") || link.contains("https")) {
             formattedLink = link.replaceFirst("http(s)?", "");
@@ -39,25 +41,31 @@ public class TinyUrlController {
 
         //Check if the limit is correct 5..36.
         if (formattedLink.length() < 5 || formattedLink.length() > 36) {
-            throw  new UnsupportedOperationException("O Link deve possuir pelo menos 5 caracteres e no máximo 36");
+            throw new UnsupportedOperationException("O Link deve possuir pelo menos 5 caracteres e no máximo 36");
         }
 
-        Long expiresAt = DateUtils.getExpirationDate(new Date());
+        boolean foundUUID = false;
+        Date currentDate = new Date();
+        Calendar currTime = Calendar.getInstance();
+        currTime.setTime(currentDate);
+        UUID uuid = null;
+        String newUrl = null;
+
+        //Enter this while until the random generated UUID is not presented in database.
+        while (!foundUUID) {
+            uuid = UUID.randomUUID();
+            newUrl = uuid.toString().split("-")[0];
+            Url urlFind = urlRepository.findByNewUrlAndExpiresAtGreaterThan(newUrl, currTime.getTimeInMillis());
+
+            if (urlFind == null)
+                foundUUID = true;
+        }
+
+        Long expiresAt = DateUtils.getExpirationDate(currentDate);
         String baseUrl = "localhost:8080/";
-
-        //Generates UUID, split and get first sequence of chars.
-        UUID uuid = UUID.randomUUID();
-        String newUrl = uuid.toString().split("-")[0];
-
-        //TODO: Find at database with the end url.
-
 
         Url url = new Url(formattedLink, expiresAt, newUrl);
         urlRepository.save(url);
-
-        UrlResponse urlResponse = new UrlResponse(newUrl, expiresAt);
-        return urlResponse;
+        return new UrlResponse(baseUrl.concat(newUrl), expiresAt);
     }
-
-
 }
