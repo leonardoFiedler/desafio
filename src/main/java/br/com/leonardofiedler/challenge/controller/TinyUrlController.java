@@ -5,12 +5,14 @@ import br.com.leonardofiedler.challenge.repository.UrlRepository;
 import br.com.leonardofiedler.challenge.response.UrlResponse;
 import br.com.leonardofiedler.challenge.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -21,6 +23,12 @@ public class TinyUrlController {
 
     @Autowired
     private UrlRepository urlRepository;
+
+    @Value("${server.address}")
+    private String address;
+
+    @Value("${server.port}")
+    private int port;
 
     @GetMapping(path = "/shorten")
     public @ResponseBody
@@ -62,7 +70,7 @@ public class TinyUrlController {
         }
 
         Long expiresAt = DateUtils.getExpirationDate(currentDate);
-        String baseUrl = "localhost:8080/";
+        String baseUrl = String.format("%s:%s/",address, port);
 
         Url url = new Url(formattedLink, expiresAt, newUrl);
         urlRepository.save(url);
