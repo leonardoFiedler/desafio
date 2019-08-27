@@ -8,6 +8,7 @@ Setup do Projeto e Tecnologias Utilizadas
 
 - Java + Spring + JPA
 - MySQL
+- IDE utilizada: IntelliJ Community
 
 Instalação e execução do MySQL localmente
 A instalação do MySQL localmente é feita a partir do Docker-Compose. O arquivo de compose (docker-compose.yml) está localizado 
@@ -22,10 +23,15 @@ docker-compose down
 Configurações adicionais
 
 
-URL de inclusão de Url's encurtadas
+Rota de inclusão de Url's encurtadas
 Rota: GET /tiny-url/shorten
-Parâmetro: link = String (São removidos quais caracteres diferentes de letras e números, 
+Parâmetro: link = String (São removidos quaisquer caracteres diferentes de letras e números, 
 também são removidos prefixos como: http/https).
+Exemplo de rota: localhost:8080/tiny-url/shorten?link=twitter.com
+
+Acesso público para testes
+O projeto foi hospedado publicamente em um EC2 Micro na AWS.
+Link de acesso público para testes: ec2-18-228-5-116.sa-east-1.compute.amazonaws.com:8080
 
 Conclusões e limitações
 É possível efetuar o redirecionamento de URL(s) dos mais variados tipos, no entanto, por conta de limitações

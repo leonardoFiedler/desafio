@@ -20,4 +20,9 @@ public class DateUtils {
         return calendar.getTimeInMillis();
     }
 
+    public static Calendar getCurrentTimeCalendar() {
+        Calendar currTime = Calendar.getInstance();
+        currTime.setTime(new Date());
+        return currTime;
+    }
 }

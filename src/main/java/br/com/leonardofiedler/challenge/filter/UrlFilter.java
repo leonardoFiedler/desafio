@@ -1,7 +1,7 @@
 package br.com.leonardofiedler.challenge.filter;
 
 import br.com.leonardofiedler.challenge.model.Url;
-import br.com.leonardofiedler.challenge.repository.UrlRepository;
+import br.com.leonardofiedler.challenge.service.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import java.util.Date;
 public class UrlFilter implements Filter {
 
     @Autowired
-    private UrlRepository urlRepository;
+    private UrlService urlService;
 
     //The HTTPS here was defined due to problems to redirect
     private static final String URL_SCHEME_DEFAULT = "https://";
@@ -45,7 +45,7 @@ public class UrlFilter implements Filter {
         //If not in a known route or if path not contains . character (this character could be the difference)
         //from an internal and external route verification.
         if (!path.equalsIgnoreCase("tiny-url") && !path.contains(URL_SCHEME_DEFAULT)) {
-            Url url = urlRepository.findByNewUrl(path);
+            Url url = urlService.findByNewUrl(path);
 
             //Check if route is valid
             if (url == null) {

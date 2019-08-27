@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -16,8 +17,13 @@ import javax.persistence.Id;
 @Entity
 public class Url {
 
-    private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Size(min = 5, max = 36)
     private String link;
+
     private Long expiresAt;
     private String newUrl;
 
